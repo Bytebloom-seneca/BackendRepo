@@ -1,5 +1,6 @@
 const { db } = require("../config/firebase");
 
+// POST /api/rides — Post a new ride
 const postRide = async (req, res) => {
   try {
     const { userId, departure, destination, date, time, seats, cost } = req.body;
@@ -18,22 +19,24 @@ const postRide = async (req, res) => {
     const ref = await db.collection("rides").add(ride);
     res.status(201).json({ rideId: ref.id, ...ride });
   } catch (err) {
+    console.error("Post Ride Error:", err);
     res.status(500).json({ error: "Failed to post ride" });
   }
 };
 
+// GET /api/rides — Fetch all rides
 const getRides = async (req, res) => {
   try {
     const snapshot = await db.collection("rides").get();
     const rides = snapshot.docs.map(doc => ({ rideId: doc.id, ...doc.data() }));
     res.status(200).json(rides);
   } catch (err) {
+    console.error("Get Rides Error:", err);
     res.status(500).json({ error: "Failed to fetch rides" });
   }
 };
 
-module.exports = { postRide, getRides };
-
+// POST /api/rides/match — Match rides based on departure, destination, and date
 const matchRides = async (req, res) => {
   try {
     const { departure, destination, date } = req.body;
@@ -42,9 +45,7 @@ const matchRides = async (req, res) => {
       return res.status(400).json({ message: "Missing fields: departure, destination, or date" });
     }
 
-    const db = admin.firestore();
     const snapshot = await db.collection("rides").get();
-
     const matches = [];
 
     snapshot.forEach(doc => {
@@ -70,8 +71,9 @@ const matchRides = async (req, res) => {
   }
 };
 
+// Export all handlers
 module.exports = {
-  getRides,
   postRide,
-  matchRides // ✅ add here
+  getRides,
+  matchRides
 };
