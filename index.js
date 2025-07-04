@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: [
     "http://localhost:5173",                      // local Vite dev server
-    "https://senecaride-frontend.vercel.app"      // production frontend URL
+    "http://localhost:3001"    // production frontend URL
   ],
   credentials: true
 }));
